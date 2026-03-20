@@ -25,6 +25,20 @@ allresults$model <- factor(allresults$model, levels = c("MEM","relaxedMEM_twosou
                                                 "relaxedMEM_stretchsqrt","relaxedMEM_sqrtmax",
                                                 "relaxedMEM_stretch1","relaxedMEM_allornothing"))
 
+allresults$MEM <- NA
+allresults$MEM[allresults$model == "MEM"] <- "Traditional"
+allresults$MEM[allresults$model == "relaxedMEM_twosource"] <- "Two Source"
+allresults$MEM[allresults$model == "relaxedMEM_max"] <- "Max"
+allresults$MEM[allresults$model == "relaxedMEM_sqrtmax"] <- "Sqrt Max"
+allresults$MEM[allresults$model == "relaxedMEM_stretchsqrt"] <- "Stretch Sqrt"
+allresults$MEM[allresults$model == "relaxedMEM_stretch1"] <- "Stretch"
+allresults$MEM[allresults$model == "relaxedMEM_allornothing"] <- "All or Nothing"
+
+allresults$MEM <- factor(allresults$MEM, levels = c("Traditional","Two Source",
+                                                    "Max",
+                                                    "Sqrt Max","Stretch Sqrt",
+                                                    "Stretch","All or Nothing"))
+
 #get relative values
 allresults <- allresults %>% group_by(numsources, outcome_type, diff1_c, diff2_c) %>%
   mutate(absbias_diff = abs(est.bias) - abs(est.bias[1]),
@@ -49,17 +63,17 @@ modelsub <- c("relaxedMEM_max",
 jpeg("MSEbased_Figures/MSEBased_Diff_Cont_3S_biasvsvar.jpeg", width = 1600, height = 800, quality = 100)
 ggplot(data = allresults[(allresults$numsources == 3) & (allresults$outcome_type == "continuous") &
                            (allresults$model %in% modelsub),], 
-       aes(y = absbias_diff, x = var_diff, col = model)) +
+       aes(y = absbias_diff, x = var_diff, col = MEM)) +
   geom_point(size = 4) +
   facet_wrap(~diff1_c + diff2_c, nrow = 1) +
-  ggtitle("Three Source, Continuous Outcome: Difference in Absolute Bias vs Difference in Variance Relative to Traditional MEM") +
+  ggtitle("Three Source, Continuous Outcome: Difference in Absolute Mean Bias vs Difference in Variance Relative to Traditional MEM") +
   theme(text = element_text(size = 15)) +
-  xlab("Difference in Variance") + ylab("Difference in Absolute Bias")
+  xlab("Difference in Variance") + ylab("Difference in Absolute Mean Bias")
 dev.off()
 
 jpeg("MSEbased_Figures/MSEBased_Cont_3S_biasvsvar.jpeg", width = 1600, height = 800, quality = 100)
 ggplot(data = allresults[(allresults$numsources == 3) & (allresults$outcome_type == "continuous"),], 
-       aes(y = est.bias, x = est.var, col = model)) +
+       aes(y = est.bias, x = est.var, col = MEM)) +
   geom_point(size = 4) +
   facet_wrap(~diff1_c + diff2_c, nrow = 1) +
   ggtitle("Three Source, Continuous Outcome: Bias vs Variance") +
@@ -69,17 +83,17 @@ dev.off()
 jpeg("MSEbased_Figures/MSEBased_Diff_Cont_3S_biasvsESSS.jpeg", width = 1600, height = 800, quality = 100)
 ggplot(data = allresults[(allresults$numsources == 3) & (allresults$outcome_type == "continuous") &
                            (allresults$model %in% modelsub),], 
-       aes(y = absbias_diff, x = esss_diff, col = model)) +
+       aes(y = absbias_diff, x = esss_diff, col = MEM)) +
   geom_point(size = 4) +
   facet_wrap(~diff1_c + diff2_c, nrow = 1) +
-  ggtitle("Three Source, Continuous Outcome: Difference in Absolute Bias vs Difference in ESSS Relative to Traditional MEM") +
+  ggtitle("Three Source, Continuous Outcome: Difference in Absolute Mean Bias vs Difference in ESSS Relative to Traditional MEM") +
   theme(text = element_text(size = 15)) +
-  xlab("Difference in ESSS") + ylab("Difference in Absolute Bias")
+  xlab("Difference in ESSS") + ylab("Difference in Absolute Mean Bias")
 dev.off()
 
 jpeg("MSEbased_Figures/MSEBased_Cont_3S_biasvsESSS.jpeg", width = 1600, height = 800, quality = 100)
 ggplot(data = allresults[(allresults$numsources == 3) & (allresults$outcome_type == "continuous"),], 
-       aes(y = est.bias, x = est.esss, col = model)) +
+       aes(y = est.bias, x = est.esss, col = MEM)) +
   geom_point(size = 4) +
   facet_wrap(~diff1_c + diff2_c, nrow = 1) +
   ggtitle("Three Source, Continuous Outcome: Bias vs ESSS") +
@@ -89,7 +103,7 @@ dev.off()
 jpeg("MSEbased_Figures/MSEBased_Diff_Cont_3S_MSEvsESSS.jpeg", width = 1600, height = 800, quality = 100)
 ggplot(data = allresults[(allresults$numsources == 3) & (allresults$outcome_type == "continuous") &
                            (allresults$model %in% modelsub),], 
-       aes(y = mse_diff, x = esss_diff, col = model)) +
+       aes(y = mse_diff, x = esss_diff, col = MEM)) +
   geom_point(size = 4) +
   facet_wrap(~diff1_c + diff2_c, nrow = 1) +
   ggtitle("Three Source, Continuous Outcome: Difference in MSE vs Difference in ESSS Relative to Traditional MEM") +
@@ -99,7 +113,7 @@ dev.off()
 
 jpeg("MSEbased_Figures/MSEBased_Cont_3S_MSEvsESSS.jpeg", width = 1600, height = 800, quality = 100)
 ggplot(data = allresults[(allresults$numsources == 3) & (allresults$outcome_type == "continuous"),], 
-       aes(y = mse.part, x = est.esss, col = model)) +
+       aes(y = mse.part, x = est.esss, col = MEM)) +
   geom_point(size = 4) +
   facet_wrap(~diff1_c + diff2_c, nrow = 1) +
   ggtitle("Three Source, Continuous Outcome: MSE vs ESSS") +
@@ -111,19 +125,19 @@ dev.off()
 jpeg("MSEbased_Figures/MSEBased_Diff_Cont_2S_biasvsvar.jpeg", width = 1600, height = 800, quality = 100)
 ggplot(data = allresults[(allresults$numsources == 2) & (allresults$outcome_type == "continuous") &
                            (allresults$model %in% modelsub) & (allresults$model != "relaxedMEM_twosource"),], 
-       aes(y = absbias_diff, x = var_diff, col = model)) +
+       aes(y = absbias_diff, x = var_diff, col = MEM)) +
   geom_point(size = 4) +
   facet_wrap(~diff1_c, nrow = 1) +
-  ggtitle("Two Source, Continuous Outcome: Difference in Absolute Bias vs Difference in Variance Relative to Traditional MEM") +
+  ggtitle("Two Source, Continuous Outcome: Difference in Absolute Mean Bias vs Difference in Variance Relative to Traditional MEM") +
   theme(text = element_text(size = 15)) +
-  xlab("Difference in Variance") + ylab("Difference in Absolute Bias")
+  xlab("Difference in Variance") + ylab("Difference in Absolute Mean Bias")
 dev.off()
 
 jpeg("MSEbased_Figures/MSEBased_Cont_2S_biasvsvar.jpeg", width = 1600, height = 800, quality = 100)
 ggplot(data = allresults[(allresults$numsources == 2) & 
                            (allresults$outcome_type == "continuous") & 
                            (allresults$model != "relaxedMEM_twosource"),], 
-       aes(y = est.bias, x = est.var, col = model)) +
+       aes(y = est.bias, x = est.var, col = MEM)) +
   geom_point(size = 4) +
   facet_wrap(~diff1_c, nrow = 1) +
   ggtitle("Two Source, Continuous Outcome: Bias vs Variance") +
@@ -133,18 +147,18 @@ dev.off()
 jpeg("MSEbased_Figures/MSEBased_Diff_Cont_2S_biasvsESSS.jpeg", width = 1600, height = 800, quality = 100)
 ggplot(data = allresults[(allresults$numsources == 2) & (allresults$outcome_type == "continuous") &
                            (allresults$model %in% modelsub) & (allresults$model != "relaxedMEM_twosource"),], 
-       aes(y = absbias_diff, x = esss_diff, col = model)) +
+       aes(y = absbias_diff, x = esss_diff, col = MEM)) +
   geom_point(size = 4) +
   facet_wrap(~diff1_c, nrow = 1) +
-  ggtitle("Two Source, Continuous Outcome: Difference in Absolute Bias vs Difference in ESSS Relative to Traditional MEM") +
+  ggtitle("Two Source, Continuous Outcome: Difference in Absolute Mean Bias vs Difference in ESSS Relative to Traditional MEM") +
   theme(text = element_text(size = 15)) +
-  xlab("Difference in ESSS") + ylab("Difference in Absolute Bias")
+  xlab("Difference in ESSS") + ylab("Difference in Absolute Mean Bias")
 dev.off()
 
 jpeg("MSEbased_Figures/MSEBased_Cont_2S_biasvsESSS.jpeg", width = 1600, height = 800, quality = 100)
 ggplot(data = allresults[(allresults$numsources == 2) & (allresults$outcome_type == "continuous") &
                            (allresults$model != "relaxedMEM_twosource"),], 
-       aes(y = est.bias, x = est.esss, col = model)) +
+       aes(y = est.bias, x = est.esss, col = MEM)) +
   geom_point(size = 4) +
   facet_wrap(~diff1_c, nrow = 1)  +
   ggtitle("Two Source, Continuous Outcome: Bias vs ESSS") +
@@ -154,7 +168,7 @@ dev.off()
 jpeg("MSEbased_Figures/MSEBased_Diff_Cont_2S_MSEvsESSS.jpeg", width = 1600, height = 800, quality = 100)
 ggplot(data = allresults[(allresults$numsources == 2) & (allresults$outcome_type == "continuous") &
                            (allresults$model %in% modelsub) & (allresults$model != "relaxedMEM_twosource"),], 
-       aes(y = mse_diff, x = esss_diff, col = model)) +
+       aes(y = mse_diff, x = esss_diff, col = MEM)) +
   geom_point(size = 4) +
   facet_wrap(~diff1_c, nrow = 1) +
   ggtitle("Two Source, Continuous Outcome: Difference in MSE vs Difference in ESSS Relative to Traditional MEM") +
@@ -165,7 +179,7 @@ dev.off()
 jpeg("MSEbased_Figures/MSEBased_Cont_2S_MSEvsESSS.jpeg", width = 1600, height = 800, quality = 100)
 ggplot(data = allresults[(allresults$numsources == 2) & (allresults$outcome_type == "continuous") &
                            (allresults$model != "relaxedMEM_twosource"),], 
-       aes(y = mse.part, x = est.esss, col = model)) +
+       aes(y = mse.part, x = est.esss, col = MEM)) +
   geom_point(size = 4) +
   facet_wrap(~diff1_c, nrow = 1) +
   ggtitle("Two Source, Continuous Outcome: MSE vs ESSS") +
@@ -182,17 +196,17 @@ dev.off()
 jpeg("MSEbased_Figures/MSEBased_Diff_Bin_3S_biasvsvar.jpeg", width = 1600, height = 800, quality = 100)
 ggplot(data = allresults[(allresults$numsources == 3) & (allresults$outcome_type == "binary") &
                            (allresults$model %in% modelsub),], 
-       aes(y = absbias_diff, x = var_diff, col = model)) +
+       aes(y = absbias_diff, x = var_diff, col = MEM)) +
   geom_point(size = 4) +
   facet_wrap(~diff1_c + diff2_c, nrow = 1) +
-  ggtitle("Three Source, Binary Outcome: Difference in Absolute Bias vs Difference in Variance Relative to Traditional MEM") +
+  ggtitle("Three Source, Binary Outcome: Difference in Absolute Mean Bias vs Difference in Variance Relative to Traditional MEM") +
   theme(text = element_text(size = 15)) +
-  xlab("Difference in Variance") + ylab("Difference in Absolute Bias")
+  xlab("Difference in Variance") + ylab("Difference in Absolute Mean Bias")
 dev.off()
 
 jpeg("MSEbased_Figures/MSEBased_Bin_3S_biasvsvar.jpeg", width = 1600, height = 800, quality = 100)
 ggplot(data = allresults[(allresults$numsources == 3) & (allresults$outcome_type == "binary"),], 
-       aes(y = est.bias, x = est.var, col = model)) +
+       aes(y = est.bias, x = est.var, col = MEM)) +
   geom_point(size = 4) +
   facet_wrap(~diff1_c + diff2_c, nrow = 1) +
   ggtitle("Three Source, Binary Outcome: Bias vs ESSS") +
@@ -202,17 +216,17 @@ dev.off()
 jpeg("MSEbased_Figures/MSEBased_Diff_Bin_3S_biasvsESSS.jpeg", width = 1600, height = 800, quality = 100)
 ggplot(data = allresults[(allresults$numsources == 3) & (allresults$outcome_type == "binary") &
                            (allresults$model %in% modelsub),], 
-       aes(y = absbias_diff, x = esss_diff, col = model)) +
+       aes(y = absbias_diff, x = esss_diff, col = MEM)) +
   geom_point(size = 4) +
   facet_wrap(~diff1_c + diff2_c, nrow = 1) +
-  ggtitle("Three Source, Binary Outcome: Difference in Absolute Bias vs Difference in ESSS Relative to Traditional MEM") +
+  ggtitle("Three Source, Binary Outcome: Difference in Absolute Mean Bias vs Difference in ESSS Relative to Traditional MEM") +
   theme(text = element_text(size = 15)) +
-  xlab("Difference in ESSS") + ylab("Difference in Absolute Bias")
+  xlab("Difference in ESSS") + ylab("Difference in Absolute Mean Bias")
 dev.off()
 
 jpeg("MSEbased_Figures/MSEBased_Bin_3S_biasvsESSS.jpeg", width = 1600, height = 800, quality = 100)
 ggplot(data = allresults[(allresults$numsources == 3) & (allresults$outcome_type == "binary"),], 
-       aes(y = est.bias, x = est.esss, col = model)) +
+       aes(y = est.bias, x = est.esss, col = MEM)) +
   geom_point(size = 4) +
   facet_wrap(~diff1_c + diff2_c, nrow = 1) +
   ggtitle("Three Source, Binary Outcome: Bias vs ESSS") +
@@ -222,7 +236,7 @@ dev.off()
 jpeg("MSEbased_Figures/MSEBased_Diff_Bin_3S_MSEvsESSS.jpeg", width = 1600, height = 800, quality = 100)
 ggplot(data = allresults[(allresults$numsources == 3) & (allresults$outcome_type == "binary") &
                            (allresults$model %in% modelsub),], 
-       aes(y = mse_diff, x = esss_diff, col = model)) +
+       aes(y = mse_diff, x = esss_diff, col = MEM)) +
   geom_point(size = 4) +
   facet_wrap(~diff1_c + diff2_c, nrow = 1) +
   ggtitle("Three Source, Binary Outcome: Difference in MSE vs Difference in ESSS Relative to Traditional MEM") +
@@ -232,7 +246,7 @@ dev.off()
 
 jpeg("MSEbased_Figures/MSEBased_Bin_3S_MSEvsESSS.jpeg", width = 1600, height = 800, quality = 100)
 ggplot(data = allresults[(allresults$numsources == 3) & (allresults$outcome_type == "binary"),], 
-       aes(y = mse.part, x = est.esss, col = model)) +
+       aes(y = mse.part, x = est.esss, col = MEM)) +
   geom_point(size = 4) +
   facet_wrap(~diff1_c + diff2_c, nrow = 1) +
   ggtitle("Three Source, Binary Outcome: MSE vs ESSS") +
@@ -244,18 +258,18 @@ dev.off()
 jpeg("MSEbased_Figures/MSEBased_Diff_Bin_2S_biasvsvar.jpeg", width = 1600, height = 800, quality = 100)
 ggplot(data = allresults[(allresults$numsources == 2) & (allresults$outcome_type == "binary") &
                            (allresults$model %in% modelsub) & (allresults$model != "relaxedMEM_twosource"),], 
-       aes(y = absbias_diff, x = var_diff, col = model)) +
+       aes(y = absbias_diff, x = var_diff, col = MEM)) +
   geom_point(size = 4) +
   facet_wrap(~diff1_c, nrow = 1) +
-  ggtitle("Two Source, Binary Outcome: Difference in Absolute Bias vs Difference in Variance Relative to Traditional MEM") +
+  ggtitle("Two Source, Binary Outcome: Difference in Absolute Mean Bias vs Difference in Variance Relative to Traditional MEM") +
   theme(text = element_text(size = 15)) +
-  xlab("Difference in Variance") + ylab("Difference in Absolute Bias")
+  xlab("Difference in Variance") + ylab("Difference in Absolute Mean Bias")
 dev.off()
 
 jpeg("MSEbased_Figures/MSEBased_Bin_2S_biasvsvar.jpeg", width = 1600, height = 800, quality = 100)
 ggplot(data = allresults[(allresults$numsources == 2) & (allresults$outcome_type == "binary") &
                            (allresults$model != "relaxedMEM_twosource"),], 
-       aes(y = est.bias, x = est.var, col = model)) +
+       aes(y = est.bias, x = est.var, col = MEM)) +
   geom_point(size = 4) +
   facet_wrap(~diff1_c, nrow = 1) +
   ggtitle("Two Source, Binary Outcome: Bias vs ESSS") +
@@ -265,18 +279,18 @@ dev.off()
 jpeg("MSEbased_Figures/MSEBased_Diff_Bin_2S_biasvsESSS.jpeg", width = 1600, height = 800, quality = 100)
 ggplot(data = allresults[(allresults$numsources == 2) & (allresults$outcome_type == "binary") &
                            (allresults$model %in% modelsub) & (allresults$model != "relaxedMEM_twosource"),], 
-       aes(y = absbias_diff, x = esss_diff, col = model)) +
+       aes(y = absbias_diff, x = esss_diff, col = MEM)) +
   geom_point(size = 4) +
   facet_wrap(~diff1_c, nrow = 1) +
-  ggtitle("Two Source, Binary Outcome: Difference in Absolute Bias vs Difference in ESSS Relative to Traditional MEM") +
+  ggtitle("Two Source, Binary Outcome: Difference in Absolute Mean Bias vs Difference in ESSS Relative to Traditional MEM") +
   theme(text = element_text(size = 15)) +
-  xlab("Difference in ESSS") + ylab("Difference in Absolute Bias")
+  xlab("Difference in ESSS") + ylab("Difference in Absolute Mean Bias")
 dev.off()
 
 jpeg("MSEbased_Figures/MSEBased_Bin_2S_biasvsESSS.jpeg", width = 1600, height = 800, quality = 100)
 ggplot(data = allresults[(allresults$numsources == 2) & (allresults$outcome_type == "binary") &
                            (allresults$model != "relaxedMEM_twosource"),], 
-       aes(y = est.bias, x = est.esss, col = model)) +
+       aes(y = est.bias, x = est.esss, col = MEM)) +
   geom_point(size = 4) +
   facet_wrap(~diff1_c, nrow = 1) +
   ggtitle("Two Source, Binary Outcome: Bias vs ESSS") +
@@ -286,7 +300,7 @@ dev.off()
 jpeg("MSEbased_Figures/MSEBased_Diff_Bin_2S_MSEvsESSS.jpeg", width = 1600, height = 800, quality = 100)
 ggplot(data = allresults[(allresults$numsources == 2) & (allresults$outcome_type == "binary") &
                            (allresults$model %in% modelsub) & (allresults$model != "relaxedMEM_twosource"),], 
-       aes(y = mse_diff, x = esss_diff, col = model)) +
+       aes(y = mse_diff, x = esss_diff, col = MEM)) +
   geom_point(size = 4) +
   facet_wrap(~diff1_c, nrow = 1) +
   ggtitle("Two Source, Binary Outcome: Difference in MSE vs Difference in ESSS Relative to Traditional MEM") +
@@ -297,7 +311,7 @@ dev.off()
 jpeg("MSEbased_Figures/MSEBased_Bin_2S_MSEvsESSS.jpeg", width = 1600, height = 800, quality = 100)
 ggplot(data = allresults[(allresults$numsources == 2) & (allresults$outcome_type == "binary") &
                            (allresults$model != "relaxedMEM_twosource"),], 
-       aes(y = mse.part, x = est.esss, col = model)) +
+       aes(y = mse.part, x = est.esss, col = MEM)) +
   geom_point(size = 4) +
   facet_wrap(~diff1_c, nrow = 1) +
   ggtitle("Two Source, Binary Outcome: MSE vs ESSS") +
